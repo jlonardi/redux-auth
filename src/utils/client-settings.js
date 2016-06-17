@@ -4,12 +4,14 @@ import fetch from "./fetch";
 import parseEndpointConfig from "./parse-endpoint-config";
 import {setEndpointKeys} from "../actions/configure";
 import {
+  getApiUrl,
   getCurrentSettings,
   setCurrentSettings,
   getInitialEndpointKey,
   setDefaultEndpointKey,
   setCurrentEndpoint,
   setCurrentEndpointKey,
+  removeData,
   retrieveData,
   persistData
 } from "./session-storage";
@@ -21,7 +23,7 @@ const defaultSettings = {
   proxyIf:            function() { return false; },
   proxyUrl:           "/proxy",
   forceHardRedirect:  false,
-  storage:            "cookies",
+  storage:            "localStorage",
   cookieExpiry:       14,
   cookiePath:         "/",
   initialCredentials: null,
@@ -93,13 +95,20 @@ export function applyConfig({dispatch, endpoint={}, settings={}, reset=false}={}
 
   if (getCurrentSettings().initialCredentials) {
     // skip initial headers check (i.e. check was already done server-side)
-    let {user, headers, config} = getCurrentSettings().initialCredentials;
+    let {user, headers} = getCurrentSettings().initialCredentials;
     persistData(C.SAVED_CREDS_KEY, headers);
     return Promise.resolve(user);
   } else if (savedCreds) {
     // verify session credentials with API
-    return fetch(savedCreds)
+    return fetch(`${getApiUrl(currentEndpointKey)}${currentEndpoint[currentEndpointKey].tokenValidationPath}`)
+    .then(response => {
+          if (response.status >= 200 && response.status < 300) {
+            return response.json().then(({ data }) => (data));
+          }
+          removeData(C.SAVED_CREDS_KEY);
+          return Promise.reject({reason: "1111111111111111."});
+    });
   } else {
-    return Promise.reject({reason: "No credentials."})
+    return Promise.reject({reason: "asdsadasdas."})
   }
 }
