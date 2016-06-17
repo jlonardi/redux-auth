@@ -23,7 +23,7 @@ const defaultSettings = {
   proxyIf:            function() { return false; },
   proxyUrl:           "/proxy",
   forceHardRedirect:  false,
-  storage:            "cookies",
+  storage:            "localStorage",
   cookieExpiry:       14,
   cookiePath:         "/",
   initialCredentials: null,
@@ -106,9 +106,9 @@ export function applyConfig({dispatch, endpoint={}, settings={}, reset=false}={}
             return response.json().then(({ data }) => (data));
           }
           removeData(C.SAVED_CREDS_KEY);
-          return Promise.reject({reason: "No credentials."});
+          return Promise.reject({reason: "1111111111111111."});
     });
   } else {
-    return Promise.reject({reason: "No credentials."})
+    return Promise.reject({reason: "asdsadasdas."})
   }
 }
